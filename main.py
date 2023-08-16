@@ -54,7 +54,9 @@ class FrameProcessor:
 if __name__ == '__main__':
     from config.config import input_src
     import imutils
+    import os
     cap = cv2.VideoCapture(input_src)
+    os.makedirs("tmp", exist_ok=True)
 
     FP = FrameProcessor()
 

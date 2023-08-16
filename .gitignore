@@ -28,7 +28,6 @@ weights
 SPPE
 log
 video
-config/config.py
 src/debug/model
 src/debug/video
 src/debug/tmp
