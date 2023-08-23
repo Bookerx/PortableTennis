@@ -6,7 +6,7 @@ from .dataset.predict import HeatmapPredictor
 from .utils.utils import get_option_path, get_corresponding_cfg
 import os
 import torch
-import numpy as np
+import copy
 
 posenet = PoseModel()
 
@@ -43,7 +43,10 @@ class PoseEstimator:
         posenet.load(model_path)
         self.HP = HeatmapPredictor(self.out_h, self.out_w, self.in_h, self.in_w)
 
-    def estimate(self, img, boxes, batch=4):
+    def estimate(self, img, boxes, batch=4, whole_img=False):
+        if whole_img:
+            return self.whole_preprocess(img)
+
         num_batches = len(boxes)//batch
         left_over = len(boxes) % batch
         inputs, img_metas = self.preprocess(img, boxes)
@@ -57,6 +60,20 @@ class PoseEstimator:
         outputs.append(self.model(inputs[-left_over:]))
         hms = torch.cat(outputs).cpu().data
         kps, scores = self.HP.decode_hms(hms, img_metas)
+        return kps, scores
+
+    def whole_preprocess(self, frame):
+        inp, padded_size = self.transform.process_frame(copy.deepcopy(frame), self.out_h, self.out_w, self.in_h,
+                                                        self.in_w)
+        img_meta = {
+            "name": frame,
+            "enlarged_box": [0, 0, frame.shape[1], frame.shape[0]],
+            "padded_size": padded_size
+        }
+        if self.device != "cpu":
+            inp = inp.cuda()
+        out = self.model(inp.unsqueeze(dim=0))
+        kps, scores = self.HP.decode_hms(out, [img_meta])
         return kps, scores
 
     def preprocess(self, img, boxes):

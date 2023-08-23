@@ -10,6 +10,10 @@ pose_weight = "assets/pose/latest.pth"
 pose_model_cfg = ""
 pose_data_cfg = ""
 
+ball_weight = "assets/ball/latest.pth"
+ball_model_cfg = ""
+ball_data_cfg = ""
+
 input_src = "assets/videos/video_input3.mp4"
 output_src = ""
 out_size = (1080, 720)

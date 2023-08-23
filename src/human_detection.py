@@ -10,10 +10,12 @@ tensor = torch.Tensor
 
 
 class HumanDetector:
-    def __init__(self, detector_cfg, detector_weight, estimator_weight, estimator_model_cfg, estimator_data_cfg):
+    def __init__(self, detector_cfg, detector_weight, estimator_weight, estimator_model_cfg, estimator_data_cfg,
+                 ball_estimator_weight, ball_estimator_model_cfg, ball_estimator_data_cfg):
         self.detector = PersonDetector(detector_cfg, detector_weight)
         self.estimator = PoseEstimator(estimator_weight, estimator_model_cfg, estimator_data_cfg)
         self.tracker = PersonTracker()
+        self.ball_estimator = PoseEstimator(ball_estimator_weight, ball_estimator_model_cfg, ball_estimator_data_cfg)
 
     def process(self, frame, print_time=False):
         with torch.no_grad():
@@ -22,6 +24,10 @@ class HumanDetector:
                 curr_time = time.time()
             dets = self.detector.detect(frame)
             dets = dets[[idx for idx, det in enumerate(dets) if self.detector.filter(det)]]
+            ball_kps, ball_kps_score = self.ball_estimator.estimate(frame, dets, whole_img=True)
+            if print_time:
+                print("Ball estimator uses: {}s".format(round((time.time() - curr_time), 4)))
+                curr_time = time.time()
             if print_time:
                 print("Detector uses: {}s".format(round((time.time() - curr_time), 4)))
                 curr_time = time.time()
@@ -34,7 +40,7 @@ class HumanDetector:
                 if print_time:
                     print("Pose estimator uses: {}s".format(round((time.time() - curr_time), 4)))
             self.convert_result_to_tensor()
-            return self.ids, self.boxes, self.kps, self.kps_scores
+            return self.ids, self.boxes, self.kps, self.kps_scores, ball_kps, ball_kps_score
 
     def convert_result_to_tensor(self):
         self.ids = tensor(self.ids)

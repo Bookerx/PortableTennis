@@ -6,12 +6,14 @@ class Visualizer:
         self.IDV = IDVisualizer()
         self.KPV = KeyPointVisualizer(kps_num, "coco")
         self.BBV = BBoxVisualizer()
+        self.BallV = BallVisualizer()
 
-    def visualize(self, image, ids, boxes, kps, kps_scores=()):
+    def visualize(self, image, ids, boxes, kps, kps_scores, ball_pos):
         if len(ids) > 0:
             self.BBV.visualize(boxes, image)
             self.IDV.plot_bbox_id(self.get_id2bbox(ids, boxes), image)
             self.KPV.visualize(image, kps, kps_scores)
+            self.BallV.visualize(image, ball_pos)
 
     @staticmethod
     def get_id2bbox(ids, boxes):
@@ -78,6 +80,14 @@ coco_line_color = [(0, 215, 255), (0, 255, 204), (0, 134, 255), (0, 255, 50),
 mpii_p_color = [PURPLE, BLUE, BLUE, RED, RED, BLUE, BLUE, RED, RED, PURPLE, PURPLE, PURPLE, RED, RED, BLUE,
                 BLUE]
 mpii_line_color = [PURPLE, BLUE, BLUE, RED, RED, BLUE, BLUE, RED, RED, PURPLE, PURPLE, RED, RED, BLUE, BLUE]
+
+
+class BallVisualizer:
+    def __init__(self):
+        self.color = BLUE
+
+    def visualize(self, img, ball):
+        cv2.circle(img, (int(ball[0]), int(ball[1])), 10, self.color, -1)
 
 
 class KeyPointVisualizer:
