@@ -17,8 +17,8 @@ class TopViewProcessor:
         self.inv_mats = []
         self.position1, self.position2 = [], []
 
-    def process(self, court_detector, player1_box, player2_box, inp_frame):
-        img_h, img_w = inp_frame.shape[:2]
+    def process(self, court_detector, player1_box, player2_box):
+        # img_h, img_w = inp_frame.shape[:2]
         """
         Calculate the feet position of both players using the inverse transformation of the court and the boxes
         of both players
@@ -59,19 +59,20 @@ class TopViewProcessor:
         else:
             frame = self.court.copy()
         # width = frame.shape[1] // 7
-        resized = imutils.resize(frame, height=int(img_h/2))
+        # resized = imutils.resize(frame, height=int(img_h/2))
         # cv2.imshow("mipmap", resized)
         movement = self.vis_movement()
-        movement = imutils.resize(movement, height=int(img_h/2))
+        # movement = imutils.resize(movement, height=int(img_h/2))
         speed = self.vis_speed()
-        speed = imutils.resize(speed, height=int(img_h/2))
+        # speed = imutils.resize(speed, height=int(img_h/2))
         hm = self.vis_heatmap()
-        hm = imutils.resize(hm, height=int(img_h/2))
-        merged_img = np.concatenate((np.concatenate((resized, movement), axis=0),
-                                     np.concatenate((speed, hm), axis=0)), axis=1)
+        # hm = imutils.resize(hm, height=int(img_h/2))
+        # merged_img = np.concatenate((np.concatenate((resized, movement), axis=0),
+        #                              np.concatenate((speed, hm), axis=0)), axis=1)
         # merged_img = imutils.resize(merged_img, height=img_h)
         # cv2.imshow("merged_result", merged_img)
-        return np.concatenate((inp_frame, merged_img), axis=1)
+        return frame, movement, speed, hm
+        # return np.concatenate((inp_frame, merged_img), axis=1)
 
         # return smoothed_1, smoothed_2
 

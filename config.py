@@ -1,12 +1,12 @@
 
 
 detector_cfg = "assets/yolo/yolov3-1cls.cfg"
-detector_weight = "assets/yolo/last.weights"
+detector_weight = "assets/yolo/last.pt"
 
 #RgbVideoCap = 'rtsp://admin:fyp202020@192.168.8.111:554/Streaming/Channels/101/?transportmode=unicast --input-rtsp-latency=0'
 TherVideoCap = 'rtsp://admin:hkuit155@192.168.1.64:554/Streaming/Channels/201/?transportmode=unicast --input-rtsp-latency=0'
 
-pose_weight = "assets/pose/latest.pth"
+pose_weight = "assets/pose/latest_bs8lr0.001.pth"
 pose_model_cfg = ""
 pose_data_cfg = ""
 

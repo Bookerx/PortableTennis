@@ -6,6 +6,7 @@ from utils.filter_result import ResultFilterer
 from utils.visualize import Visualizer
 from src.court.court_detector import CourtDetector
 from src.court.top_view import TopViewProcessor
+import numpy as np
 
 detector_cfg, detector_weight, estimator_weight, estimator_model_cfg, estimator_data_cfg = config.detector_cfg, \
                                                                                            config.detector_weight, config.pose_weight, config.pose_model_cfg, config.pose_data_cfg
@@ -44,9 +45,23 @@ class FrameProcessor:
             self.Json.update(ids, boxes, kps, kps_scores, cnt)
         self.visualizer.visualize(frame, ids, boxes, kps, kps_scores, ball[0][0])
         self.court_detector.visualize(frame, lines)
-        frame = self.top_view.process(self.court_detector, boxes[ids.tolist().index(1)],
-                                      boxes[ids.tolist().index(2)], frame)
-        return frame
+        player_bv, move_bv, speed, hm = \
+            self.top_view.process(self.court_detector, boxes[ids.tolist().index(1)],
+                                  boxes[ids.tolist().index(2)])
+        return frame, player_bv, move_bv, speed, hm
+
+    def merge_img(self, frame, player_bv, move_bv, speed, hm):
+        img_h, img_w = frame.shape[:2]
+        player_bv = imutils.resize(player_bv, height=int(img_h/2))
+        move_bv = imutils.resize(move_bv, height=int(img_h/2))
+        speed = imutils.resize(speed, height=int(img_h/2))
+        hm = imutils.resize(hm, height=int(img_h/2))
+        hm = imutils.resize(hm, height=int(img_h/2))
+        merged_img = np.concatenate((np.concatenate((player_bv, move_bv), axis=0),
+                                     np.concatenate((speed, hm), axis=0)), axis=1)
+        merged_img = imutils.resize(merged_img, height=img_h)
+        return np.concatenate((frame, merged_img), axis=1)
+
 
     def release(self):
         if self.write_json:
@@ -67,7 +82,8 @@ if __name__ == '__main__':
     while True:
         ret, img = cap.read()
         if ret:
-            img = FP.process(img, cnt=idx)
+            imgs = FP.process(img, cnt=idx)
+            img = FP.merge_img(*imgs)
             img = imutils.resize(img, height=800)
             cv2.imshow("result", img)
             cv2.waitKey(1)
