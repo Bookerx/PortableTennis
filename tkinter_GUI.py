@@ -21,6 +21,7 @@ def update_image(canvas, image, size):
     canvas.image = photo
 
 
+
 def load_image(canvas, path, size):
     image = cv2.imread(path)
     update_image(canvas, image, size)
@@ -118,7 +119,7 @@ class StartPage(tk.Frame):
         self.speed_size = (int(self.win_width * 0.2), int(self.win_width * 0.2*0.75))
         self.heatmap_size = (int(self.win_width * 0.2), int(self.win_width * 0.2*0.75))
         self.mipmap_size = (int(self.win_width * 0.1), int(self.win_width * 0.1*64/36))
-        self.player_move_size = (int(self.win_height * 0.25), int(self.win_height * 0.25))
+        self.player_move_size = (int(self.win_width * 0.2), int(self.win_width * 0.2*0.75))
 
     def gui_set(self):
         self.canvas_video.place(relx=0.475, rely=0.35, anchor="center")
@@ -153,7 +154,7 @@ class StartPage(tk.Frame):
             self.button_calibrate.config(text="Calibrating...")
             init_img = self.init_video()
             update_image(self.canvas_video, init_img, size=self.video_size)
-            self.button_calibrate.config(text="Calibrating...", state="disabled")
+            self.button_calibrate.config(text="Calibrated", state="disabled")
             self.button_start.config(state="normal")
 
     def begin_process(self):
@@ -168,6 +169,7 @@ class StartPage(tk.Frame):
                 if self.start_flag:
                     ret, img = self.cap.read()
                     if not ret:
+                        self.start_flag = False
                         break
                     img, player_bv, move_bv, speed, hm = self.FP.process(img, cnt=self.idx)
                     update_image(self.canvas_video, img, size=self.video_size)
@@ -178,6 +180,8 @@ class StartPage(tk.Frame):
                     # update_image(self.canvas_player2, player_bv[1], size=self.player_move_size)
                     update_image(self.canvas_ball, move_bv, size=self.mipmap_size)
                     update_image(self.canvas_players, player_bv, size=self.player_move_size)
+                    self.update_idletasks()
+                    self.update()
                 else:
                     self.start_flag = False
                     break
