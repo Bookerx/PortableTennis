@@ -47,18 +47,19 @@ class PoseEstimator:
         if whole_img:
             return self.whole_preprocess(img)
 
-        num_batches = len(boxes)//batch
-        left_over = len(boxes) % batch
+        # num_batches = len(boxes)//batch
+        # left_over = len(boxes) % batch
         inputs, img_metas = self.preprocess(img, boxes)
 
         if self.device != "cpu":
             inputs = inputs.cuda()
 
-        outputs = []
-        for num_batch in range(num_batches):
-            outputs.append(self.model(inputs[num_batch*batch:(num_batch+1)*batch]))
-        outputs.append(self.model(inputs[-left_over:]))
-        hms = torch.cat(outputs).cpu().data
+        # outputs = []
+        # for num_batch in range(num_batches):
+        #     outputs.append(self.model(inputs[num_batch*batch:(num_batch+1)*batch]))
+        # outputs.append(self.model(inputs[-left_over:]))
+        # hms = torch.cat(outputs).cpu().data
+        hms = self.model(inputs).cpu().data
         kps, scores = self.HP.decode_hms(hms, img_metas)
         return kps, scores
 

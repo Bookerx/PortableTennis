@@ -7,6 +7,7 @@ from utils.visualize import Visualizer
 from src.court.court_detector import CourtDetector
 from src.court.top_view import TopViewProcessor
 import numpy as np
+import imutils
 
 detector_cfg, detector_weight, estimator_weight, estimator_model_cfg, estimator_data_cfg = config.detector_cfg, \
                                                                                            config.detector_weight, config.pose_weight, config.pose_model_cfg, config.pose_data_cfg
