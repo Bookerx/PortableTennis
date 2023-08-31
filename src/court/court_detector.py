@@ -72,8 +72,8 @@ class CourtDetector:
                                                             np.load("src/court/param/game_warp_matrix.npz.npy"), \
                                                             np.load("src/court/param/court_score.npz.npy").tolist()
     self.best_conf = 11
-    # court_warp_matrix, game_warp_matrix, self.court_score = self._find_homography(horizontal_lines,
-    #                                                                               vertical_lines)
+    court_warp_matrix, game_warp_matrix, self.court_score = self._find_homography(horizontal_lines,
+                                                                                  vertical_lines)
     self.court_warp_matrix.append(court_warp_matrix)
     self.game_warp_matrix.append(game_warp_matrix)
     # court_accuracy = self._get_court_accuracy(0)
